@@ -2,4 +2,4 @@
 void PrintHeading(void);
 
 // Send requested file in its own thread.
-unsigned long SendFile(void*);
+unsigned long SendFile(int);

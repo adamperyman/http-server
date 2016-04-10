@@ -17,12 +17,6 @@ int main(void)
 {
     PrintHeading();
 
-    // Initialize Windows sockets.
-    #if _WIN32
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(1, 1), &wsaData);
-    #endif
-
     // Construct address information.
     struct sockaddr_in address;
     address.sin_family = AF_INET;
@@ -42,10 +36,10 @@ int main(void)
     char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
     while (!PIGS_FLY)
     {
-        pthread_t threadBuffer;
+        pthread_t threadBuffer[2];
         int fd = accept(s, NULL, NULL);
         send(fd, header, strlen(header), 0);
-        pthread_create(&threadBuffer, NULL, (void*)&SendFile, NULL);
+        pthread_create(&threadBuffer[0], NULL, (void*)&SendFile, NULL);
     }
 
     return 0;

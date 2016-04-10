@@ -4,24 +4,27 @@
 
 void PrintHeading(void)
 {
-    fprintf(stdout, "*********************************\n");
-    fprintf(stdout, "*     159.335 Assignment 01     *\n");
-    fprintf(stdout, "*    Adam Peryman (09079122)    *\n");
-    fprintf(stdout, "*                               *\n");
-    fprintf(stdout, "*   A simple web server in C.   *\n");
-    fprintf(stdout, "*********************************\n");
+    fprintf(stdout, "**************************************\n");
+    fprintf(stdout, "*                                    *\n");
+    fprintf(stdout, "*        A simple HTTP-Server        *\n");
+    fprintf(stdout, "*                                    *\n");
+    fprintf(stdout, "* Author: Adam Peryman               *\n");
+    fprintf(stdout, "* Contact: adam.peryman@gmail.com    *\n");
+    fprintf(stdout, "**************************************\n");
 }
 
-unsigned long SendFile(void* fd)
+unsigned long SendFile(int fd)
 {
     // Get request.
     char data[512] = { '\0' };
-    int request = recv((unsigned long)fd, data, 512, 0);
+    int request = recv(fd, data, 512, 0);
     data[request] = '\0';
 
     // Get filename from request.
     char fileName[256] = { '\0' };
     sscanf(data, "GET /%s ", fileName);
+
+    fprintf(stdout, "%s\n", data);
 
     // Check filename.
     FILE* fp = fopen(fileName, "rb");
@@ -37,14 +40,14 @@ unsigned long SendFile(void* fd)
     int tempChar = 0;
     while ((tempChar = fgetc(fp)) != EOF)
     {
-        send((unsigned long)fd, &tempChar, sizeof(tempChar), 0);
+        send(fd, &tempChar, sizeof(tempChar), 0);
     }
 
     // We're done here.
     fprintf(stdout, "Finished sending %s!\n\n", fileName);
     fprintf(stdout, "> Waiting..\n\n");
     fclose(fp);
-    close((unsigned long)fd);
+    close(fd);
 
     return 0;
 }

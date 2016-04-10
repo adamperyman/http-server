@@ -23,4 +23,4 @@ HTTP-Server: $(OBJ) $(MAIN)
 .PHONY: clean
 
 clean:
-	rm -f ./*.o $(ODIR)/*.o *~ core $(IDIR)/*~ ./HTTP-Server
+	rm -f ./*.o $(LDIR)/*.o $(MAIN) *~ core $(IDIR)/*~ ./HTTP-Server
