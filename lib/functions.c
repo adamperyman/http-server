@@ -1,7 +1,10 @@
+#include <arpa/inet.h>
 #include <stdio.h>
 #include <sys/socket.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
 
 void PrintHeading(void) {
   fprintf(stdout, "**************************************\n");
@@ -18,7 +21,7 @@ void* SendFile(void* fd) {
   char data[512] = { '\0' };
 
   // -1 byte for null terminator.
-  int request = recv((uintptr_t) fd, &data, 511, 0);
+  int request = recv((uintptr_t)fd, data, strlen(data), 0);
   if (request < 0) {
     fprintf(stderr, "Error: reading from socket.\n");
     exit(1);
@@ -47,9 +50,10 @@ void* SendFile(void* fd) {
   }
 
   // We're done here.
+  fclose(fp);
   fprintf(stdout, "Finished sending %s!\n\n", fileName);
   fprintf(stdout, "> Waiting..\n\n");
-  fclose(fp);
+  close((uintptr_t)fd);
 
   return 0;
 }

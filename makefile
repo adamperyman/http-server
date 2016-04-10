@@ -1,6 +1,6 @@
 IDIR 									= ./include
 CC 										= gcc
-CFLAGS 								= -I$(IDIR) -W -Wall -Werror -pthread
+CFLAGS 								= -I$(IDIR) -W -Wall -pthread -Werror
 
 LDIR 									= ./lib
 

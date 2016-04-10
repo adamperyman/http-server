@@ -5,6 +5,11 @@
  *  A multi-threaded HTTP server written in C.
  */
 
+ /**
+  * TODO:   1.  Make IP agnostic.
+  *         2.  Add encryption.
+  */
+
 #include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -19,7 +24,6 @@ int main(void)
 {
   PrintHeading();
 
-  // Construct address information.
   struct sockaddr_in address;
   address.sin_family = AF_INET;
   address.sin_port = htons(MY_PORT);
@@ -37,26 +41,33 @@ int main(void)
     exit(1);
   };
 
-  // Max 10 incoming connections.
-  listen(s, MAX_CONNS);
+  if (listen(s, MAX_CONNS) < 0) {
+    fprintf(stderr, "Error: Can't handle connections.\n");
+    exit(1);
+  };
+
   fprintf(stdout, "> Waiting..\n\n");
 
   char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
 
   while (!PIGS_FLY) {
-    pthread_t threadBuffer;
+    pid_t childPID = fork();
+    if (childPID < 0) {
+      fprintf(stderr, "Error: fork().\n");
+      exit(1);
+    }
 
     int fd = accept(s, NULL, NULL);
     if (fd < 0) {
       fprintf(stderr, "Error: Cannot accept connection.\n");
     } else {
-      send(fd, header, strlen(header), 0);
-
-      if (pthread_create(&threadBuffer, NULL, &SendFile, &fd) != 0) {
-        fprintf(stderr, "Error: Cannot create thread.\n");
+      if (send(fd, header, strlen(header), 0) < 0) {
+        fprintf(stderr, "Error: Sending header.\n");
       };
 
-      close(fd);
+      if (SendFile(&fd) != 0) {
+        fprintf(stderr, "Error: Sending file.\n");
+      };
     }
   }
 
