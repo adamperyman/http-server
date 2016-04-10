@@ -1,28 +1,27 @@
 #include <stdio.h>
 #include <sys/socket.h>
-#include <unistd.h>
 #include <stdlib.h>
 
 void PrintHeading(void) {
   fprintf(stdout, "**************************************\n");
   fprintf(stdout, "*                                    *\n");
-  fprintf(stdout, "*        A simple HTTP-Server        *\n");
+  fprintf(stdout, "*        A simple HTTP Server        *\n");
   fprintf(stdout, "*                                    *\n");
   fprintf(stdout, "* Author: Adam Peryman               *\n");
   fprintf(stdout, "* Contact: adam.peryman@gmail.com    *\n");
   fprintf(stdout, "**************************************\n");
 }
 
-unsigned long SendFile(int* fd) {
+void* SendFile(void* fd) {
   // Get request.
   char data[512] = { '\0' };
-  int request = recv((size_t)fd, data, 512, 0);
+
+  // -1 byte for null terminator.
+  int request = recv(*fd, &data, 511, 0);
   if (request < 0) {
     fprintf(stderr, "Error: reading from socket.\n");
     return 1;
   }
-
-  data[request] = '\0';
 
   // Get filename from request.
   char fileName[256] = { '\0' };
@@ -50,7 +49,6 @@ unsigned long SendFile(int* fd) {
   fprintf(stdout, "Finished sending %s!\n\n", fileName);
   fprintf(stdout, "> Waiting..\n\n");
   fclose(fp);
-  close(*fd);
 
   return 0;
 }

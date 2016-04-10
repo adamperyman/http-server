@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 #include "functions.h"
 #include "macros.h"
 
@@ -37,14 +38,14 @@ int main(void)
   };
 
   // Max 10 incoming connections.
-  listen(s, 10);
+  listen(s, MAX_CONNS);
   fprintf(stdout, "> Waiting..\n\n");
 
-  // Send requested file(s).
-  char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
-
   while (!PIGS_FLY) {
-    pthread_t threadBuffer;
+    // Send requested file(s).
+    char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+
+    pthread_t threadBuffer[MAX_CONNS];
 
     int fd = accept(s, NULL, NULL);
     if (fd < 0) {
@@ -55,6 +56,8 @@ int main(void)
       if (pthread_create(&threadBuffer, NULL, &SendFile, &fd) != 0) {
         fprintf(stderr, "Error: Cannot create thread.\n");
       };
+
+      close(fd);
     }
   }
 

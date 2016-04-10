@@ -7,3 +7,8 @@
 #ifndef PIGS_FLY
 #define PIGS_FLY 0
 #endif
+
+// Max client connections and consequently threads.
+#ifndef MAX_CONNS
+#define MAX_CONNS 10
+#endif
