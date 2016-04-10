@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
 #include "functions.h"
@@ -15,32 +16,47 @@
 
 int main(void)
 {
-    PrintHeading();
+  PrintHeading();
 
-    // Construct address information.
-    struct sockaddr_in address;
-    address.sin_family = AF_INET;
-    address.sin_port = htons(MY_PORT);
-    address.sin_addr.s_addr = INADDR_ANY;
-    memset(address.sin_zero, '\0', sizeof(address.sin_zero));
+  // Construct address information.
+  struct sockaddr_in address;
+  address.sin_family = AF_INET;
+  address.sin_port = htons(MY_PORT);
+  address.sin_addr.s_addr = INADDR_ANY;
+  memset(address.sin_zero, '\0', sizeof(address.sin_zero));
 
-    // Create and bind socket.
-    int s = socket(PF_INET, SOCK_STREAM, 0);
-    bind(s, (struct sockaddr*)&address, sizeof(address));
+  int s = socket(PF_INET, SOCK_STREAM, 0);
+  if (s < 0) {
+    fprintf(stderr, "Error: Cannot open socket.\n");
+    exit(1);
+  };
 
-    // Max 10 incoming connections.
-    listen(s, 10);
-    fprintf(stdout, "> Waiting..\n\n");
+  if (bind(s, (struct sockaddr*)&address, sizeof(address)) < 0) {
+    fprintf(stderr, "Error: Binding error.\n");
+    exit(1);
+  };
 
-    // Send requested file(s).
-    char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
-    while (!PIGS_FLY)
-    {
-        pthread_t threadBuffer[2];
-        int fd = accept(s, NULL, NULL);
-        send(fd, header, strlen(header), 0);
-        pthread_create(&threadBuffer[0], NULL, (void*)&SendFile, NULL);
+  // Max 10 incoming connections.
+  listen(s, 10);
+  fprintf(stdout, "> Waiting..\n\n");
+
+  // Send requested file(s).
+  char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+
+  while (!PIGS_FLY) {
+    pthread_t threadBuffer;
+
+    int fd = accept(s, NULL, NULL);
+    if (fd < 0) {
+      fprintf(stderr, "Error: Cannot accept connection.\n");
+    } else {
+      send(fd, header, strlen(header), 0);
+
+      if (pthread_create(&threadBuffer, NULL, &SendFile, &fd) != 0) {
+        fprintf(stderr, "Error: Cannot create thread.\n");
+      };
     }
+  }
 
-    return 0;
+  return 0;
 }
