@@ -7,6 +7,9 @@
 
 #include <stdio.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <pthread.h>
 #include "functions.h"
 #include "macros.h"
 
@@ -21,7 +24,7 @@ int main(void)
     #endif
 
     // Construct address information.
-    struct sockaddr_in address = {};
+    struct sockaddr_in address;
     address.sin_family = AF_INET;
     address.sin_port = htons(MY_PORT);
     address.sin_addr.s_addr = INADDR_ANY;
@@ -39,9 +42,10 @@ int main(void)
     char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
     while (!PIGS_FLY)
     {
-        SOCKET fd = accept(s, NULL, NULL);
+        pthread_t threadBuffer;
+        int fd = accept(s, NULL, NULL);
         send(fd, header, strlen(header), 0);
-        CreateThread(NULL, 0, SendFile, fd, 0, 0);
+        pthread_create(&threadBuffer, NULL, (void*)&SendFile, NULL);
     }
 
     return 0;
