@@ -65,7 +65,7 @@ int main(void)
         fprintf(stderr, "Error: Sending header.\n");
       };
 
-      if (SendFile(&fd) != 0) {
+      if (SendFile(fd) != 0) {
         fprintf(stderr, "Error: Sending file.\n");
       };
     }

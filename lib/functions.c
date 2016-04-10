@@ -21,7 +21,7 @@ void* SendFile(void* fd) {
   char data[512] = { '\0' };
 
   // -1 byte for null terminator.
-  int request = recv((uintptr_t)fd, data, strlen(data), 0);
+  int request = recv(fd, data, strlen(data), 0);
   if (request < 0) {
     fprintf(stderr, "Error: reading from socket.\n");
     exit(1);
@@ -46,14 +46,14 @@ void* SendFile(void* fd) {
   fprintf(stdout, "Sending %s.\n\n", fileName);
   int tempChar = 0;
   while ((tempChar = fgetc(fp)) != EOF) {
-    send((uintptr_t) fd, &tempChar, sizeof(tempChar), 0);
+    send(fd, &tempChar, sizeof(tempChar), 0);
   }
 
   // We're done here.
   fclose(fp);
   fprintf(stdout, "Finished sending %s!\n\n", fileName);
   fprintf(stdout, "> Waiting..\n\n");
-  close((uintptr_t)fd);
+  close(fd);
 
   return 0;
 }

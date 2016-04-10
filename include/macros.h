@@ -1,6 +1,6 @@
 // Port number for process.
 #ifndef MY_PORT
-#define MY_PORT 3490
+#define MY_PORT 3492
 #endif
 
 // Sorry, it's not often I get to use infinite loops.
