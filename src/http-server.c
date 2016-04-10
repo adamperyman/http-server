@@ -7,11 +7,7 @@
 
 #include <stdio.h>
 
-#if _WIN32
-#include <winsock.h>
-// Fix for linker issue in VS2013.
-#pragma comment(lib, "Ws2_32.lib")
-#endif
+#include <sys/socket.h>
 
 // Port number for process.
 #ifndef MY_PORT
