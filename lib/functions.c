@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 void PrintHeading(void) {
   fprintf(stdout, "**************************************\n");
@@ -17,10 +18,10 @@ void* SendFile(void* fd) {
   char data[512] = { '\0' };
 
   // -1 byte for null terminator.
-  int request = recv(*fd, &data, 511, 0);
+  int request = recv((uintptr_t) fd, &data, 511, 0);
   if (request < 0) {
     fprintf(stderr, "Error: reading from socket.\n");
-    return 1;
+    exit(1);
   }
 
   // Get filename from request.
@@ -35,14 +36,14 @@ void* SendFile(void* fd) {
   if (!fp) {
     fprintf(stderr, "Error! Can't find %s.\n\n", fileName);
     fprintf(stdout, "> Waiting..\n\n");
-    return 1;
+    exit(1);
   }
 
   // Get and send file.
   fprintf(stdout, "Sending %s.\n\n", fileName);
   int tempChar = 0;
   while ((tempChar = fgetc(fp)) != EOF) {
-    send(*fd, &tempChar, sizeof(tempChar), 0);
+    send((uintptr_t) fd, &tempChar, sizeof(tempChar), 0);
   }
 
   // We're done here.

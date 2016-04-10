@@ -41,11 +41,10 @@ int main(void)
   listen(s, MAX_CONNS);
   fprintf(stdout, "> Waiting..\n\n");
 
-  while (!PIGS_FLY) {
-    // Send requested file(s).
-    char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+  char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
 
-    pthread_t threadBuffer[MAX_CONNS];
+  while (!PIGS_FLY) {
+    pthread_t threadBuffer;
 
     int fd = accept(s, NULL, NULL);
     if (fd < 0) {
