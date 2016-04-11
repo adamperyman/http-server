@@ -2,4 +2,4 @@
 void _printHeading(void);
 
 // Send requested file in its own thread.
-void* _sendFile(void*);
+void _sendFile(int);

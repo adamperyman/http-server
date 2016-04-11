@@ -25,6 +25,7 @@
 int main(void) {
   _printHeading();
 
+  // Setup welcome socket.
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
   if (serverSocket < 0) {
     fprintf(stderr, "Error: Opening socket.\n");
@@ -38,29 +39,37 @@ int main(void) {
   serverAddress.sin_addr.s_addr = INADDR_ANY;
   serverAddress.sin_port = htons(PORT_NO);
 
+  // Bind host address.
   if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
     fprintf(stderr, "Error: Binding.\n");
     exit(EXIT_FAILURE);
   }
 
+  // Wait for requests.
   listen(serverSocket, MAX_CONNS);
   struct sockaddr_in clientAddress = {};
   socklen_t clientAddressLength = sizeof(clientAddress);
 
-  int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
-  if (clientSocket < 0) {
-    fprintf(stderr, "Error: Accepting connection.\n");
-    exit(EXIT_FAILURE);
+  while (1) {
+    int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+    if (clientSocket < 0) {
+      fprintf(stderr, "Error: Accepting connection.\n");
+      exit(EXIT_FAILURE);
+    }
+
+    int pid = fork();
+    if (pid < 0) {
+      fprintf(stderr, "Error: Creating child process.\n");
+      exit(EXIT_FAILURE);
+    }
+
+    // Got the client process.
+    if (pid == 0) {
+      close(serverSocket);
+      _sendFile(clientSocket);
+      exit(EXIT_SUCCESS);
+    } else {
+      close(clientSocket);
+    }
   }
-
-  char buffer[BUFF_SIZE] = { '\0' };
-  bzero(buffer, BUFF_SIZE);
-
-  int n = read(clientSocket, buffer, BUFF_SIZE - 1);
-  if (n < 0) {
-    fprintf(stderr, "Error: Writing to socket.\n");
-    exit(EXIT_FAILURE);
-  }
-
-  fprintf(stdout, "Buffer: %s\n", buffer);
 }
