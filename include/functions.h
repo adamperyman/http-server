@@ -1,5 +1,5 @@
-// Print a heading with basic info.
-void PrintHeading(void);
+// Print a heading with welcome info.
+void _printHeading(void);
 
 // Send requested file in its own thread.
-void* SendFile(void*);
+void* _sendFile(void*);
