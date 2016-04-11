@@ -1,14 +1,14 @@
-// Port number for process.
-#ifndef MY_PORT
-#define MY_PORT 3492
+// Buffer size for requests.
+#ifndef BUFF_SIZE
+#define BUFF_SIZE 256
 #endif
 
-// Sorry, it's not often I get to use infinite loops.
-#ifndef PIGS_FLY
-#define PIGS_FLY 0
+// Main listening port.
+#ifndef PORT_NO
+#define PORT_NO 3000
 #endif
 
-// Max client connections and consequently threads.
+// Max number of connections to handle.
 #ifndef MAX_CONNS
 #define MAX_CONNS 10
 #endif

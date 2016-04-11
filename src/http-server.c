@@ -1,75 +1,66 @@
 /**
- *  Adam Peryman (adam.peryman@gmail.com)
- *  10/04/2016
+ * Adam Peryman (adam.peryman@gmail.com)
+ * 11/04/2016
  *
- *  A multi-threaded HTTP server written in C.
+ * A simple multi-threaded HTTP server written in C.
  */
 
- /**
-  * TODO:   1.  Make IP agnostic.
-  *         2.  Add encryption.
-  */
+/**
+ * TODO:
+ * 1. Make IP Agnostic.
+ * 2. Add encryption.
+ * 3. Make multi-threaded.
+ *
+ */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <stdlib.h>
-#include <string.h>
-#include <pthread.h>
 #include <unistd.h>
+#include <string.h>
 #include "functions.h"
 #include "macros.h"
 
-int main(void)
-{
+int main(void) {
   PrintHeading();
 
-  struct sockaddr_in address;
-  address.sin_family = AF_INET;
-  address.sin_port = htons(MY_PORT);
-  address.sin_addr.s_addr = INADDR_ANY;
-  memset(address.sin_zero, '\0', sizeof(address.sin_zero));
-
-  int s = socket(PF_INET, SOCK_STREAM, 0);
-  if (s < 0) {
-    fprintf(stderr, "Error: Cannot open socket.\n");
-    exit(1);
-  };
-
-  if (bind(s, (struct sockaddr*)&address, sizeof(address)) < 0) {
-    fprintf(stderr, "Error: Binding error.\n");
-    exit(1);
-  };
-
-  if (listen(s, MAX_CONNS) < 0) {
-    fprintf(stderr, "Error: Can't handle connections.\n");
-    exit(1);
-  };
-
-  fprintf(stdout, "> Waiting..\n\n");
-
-  char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
-
-  while (!PIGS_FLY) {
-    pid_t childPID = fork();
-    if (childPID < 0) {
-      fprintf(stderr, "Error: fork().\n");
-      exit(1);
-    }
-
-    int fd = accept(s, NULL, NULL);
-    if (fd < 0) {
-      fprintf(stderr, "Error: Cannot accept connection.\n");
-    } else {
-      if (send(fd, header, strlen(header), 0) < 0) {
-        fprintf(stderr, "Error: Sending header.\n");
-      };
-
-      if (SendFile(fd) != 0) {
-        fprintf(stderr, "Error: Sending file.\n");
-      };
-    }
+  int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+  if (serverSocket < 0) {
+    fprintf(stderr, "Error: Opening socket.\n");
+    exit(EXIT_FAILURE);
   }
 
-  return 0;
+  struct sockaddr_in serverAddress = {};
+  bzero((char*) &serverAddress, sizeof(serverAddress));
+
+  serverAddress.sin_family = AF_INET;
+  serverAddress.sin_addr.s_addr = INADDR_ANY;
+  serverAddress.sin_port = htons(PORT_NO);
+
+  if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+    fprintf(stderr, "Error: Binding.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  listen(serverSocket, MAX_CONNS);
+  struct sockaddr_in clientAddress = {};
+  socklen_t clientAddressLength = sizeof(clientAddress);
+
+  int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+  if (clientSocket < 0) {
+    fprintf(stderr, "Error: Accepting connection.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  char buffer[BUFF_SIZE] = { '\0' };
+  bzero(buffer, BUFF_SIZE);
+
+  int n = read(clientSocket, buffer, BUFF_SIZE - 1);
+  if (n < 0) {
+    fprintf(stderr, "Error: Writing to socket.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  fprintf(stdout, "Buffer: %s\n", buffer);
 }
