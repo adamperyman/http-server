@@ -1,3 +1,6 @@
+#ifndef MACROS
+#define MACROS
+
 // Buffer size for requests.
 #ifndef BUFF_SIZE
 #define BUFF_SIZE 256
@@ -12,3 +15,5 @@
 #ifndef MAX_CONNS
 #define MAX_CONNS 10
 #endif
+
+#endif  // MACROS.

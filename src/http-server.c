@@ -9,7 +9,6 @@
  * TODO:
  * 1. Make IP Agnostic.
  * 2. Add encryption.
- * 3. Make multi-threaded.
  *
  */
 
