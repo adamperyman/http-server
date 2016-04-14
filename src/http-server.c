@@ -45,7 +45,11 @@ int main(void) {
   }
 
   // Wait for requests.
-  listen(serverSocket, MAX_CONNS);
+  if (listen(serverSocket, MAX_CONNS) < 0) {
+    fprintf(stdout, "Error: Listening.\n");
+    exit(EXIT_FAILURE);
+  }
+
   struct sockaddr_in clientAddress = {};
   socklen_t clientAddressLength = sizeof(clientAddress);
 
@@ -62,7 +66,9 @@ int main(void) {
       exit(EXIT_FAILURE);
     }
 
-    // Got the client process.
+    fprintf(stdout, "Waiting..\n");
+
+    // Handle sockets.
     if (pid == 0) {
       close(serverSocket);
       _sendFile(clientSocket);
