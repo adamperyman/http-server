@@ -46,15 +46,17 @@ int main(void) {
 
   // Wait for requests.
   if (listen(serverSocket, MAX_CONNS) < 0) {
-    fprintf(stdout, "Error: Listening.\n");
+    fprintf(stderr, "Error: Listening.\n");
     exit(EXIT_FAILURE);
   }
 
   struct sockaddr_in clientAddress = {};
   socklen_t clientAddressLength = sizeof(clientAddress);
 
+  fprintf(stdout, "Waiting..\n\n");
+
   while (1) {
-    int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+    int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, (socklen_t*)&clientAddressLength);
     if (clientSocket < 0) {
       fprintf(stderr, "Error: Accepting connection.\n");
       exit(EXIT_FAILURE);
@@ -65,8 +67,6 @@ int main(void) {
       fprintf(stderr, "Error: Creating child process.\n");
       exit(EXIT_FAILURE);
     }
-
-    fprintf(stdout, "Waiting..\n");
 
     // Handle sockets.
     if (pid == 0) {
