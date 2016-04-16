@@ -39,7 +39,7 @@ void _sendFile (int clientSocket) {
   }
 
   // Temporary header.
-  char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\ncharset=UTF-8\r\n";
+  char* header = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n";
   if (send(clientSocket, &header, strlen(header), 0) < 0) {
     fprintf(stderr, "Error: Writing to socket.\n");
     return;
@@ -50,7 +50,7 @@ void _sendFile (int clientSocket) {
 
   char fileChar = 0;
   while ((fileChar = fgetc(fp)) != EOF) {
-    if (send(clientSocket, &fileChar, sizeof(char), 0) < 0) {
+    if (send(clientSocket, &fileChar, 1, 0) < 0) {
       fprintf(stderr, "Error: Writing to socket.\n");
       return;
     }
