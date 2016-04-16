@@ -5,13 +5,6 @@
  * A simple multi-threaded HTTP server written in C.
  */
 
-/**
- * TODO:
- * 1. Make IP Agnostic.
- * 2. Add encryption.
- * 3. Make protocol complient.
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -56,7 +49,7 @@ int main(void) {
   fprintf(stdout, "Waiting..\n\n");
 
   while (1) {
-    int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, (socklen_t*)&clientAddressLength);
+    int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
     if (clientSocket < 0) {
       fprintf(stderr, "Error: Accepting connection.\n");
       exit(EXIT_FAILURE);
