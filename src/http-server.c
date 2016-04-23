@@ -61,13 +61,10 @@ int main(void) {
       exit(EXIT_FAILURE);
     }
 
-    // Handle sockets.
-    if (pid == 0) {
-      close(serverSocket);
-      _sendFile(clientSocket);
-      exit(EXIT_SUCCESS);
-    } else {
-      close(clientSocket);
-    }
+    _sendFile(clientSocket);
+    close(clientSocket);
   }
+
+  close(serverSocket);
+  return 0;
 }
