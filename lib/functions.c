@@ -51,15 +51,13 @@ void _sendFile (int clientSocket) {
   char header[BUFF_SIZE] = "HTTP/1.1 200 OK\r\n";
   char contentType[BUFF_SIZE] = "Content-Type: text/html\r\n";
 
-  char response[BUFF_SIZE * 5] = { '\0' };
+  char response[BUFF_SIZE] = { '\0' };
   strcat(response, header);
   strcat(response, contentType);
   strcat(response, buffer);
   strcat(response, "\r\n\r\n");
 
-  fprintf(stdout, "RESP: %s\n", response);
-
-  if (write(clientSocket, response, strlen(response) + 2) < 0) {
+  if (write(clientSocket, &response, strlen(response)) < 0) {
     fprintf(stderr, "Error: Sending.");
     return;
   };
