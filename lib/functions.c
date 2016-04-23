@@ -39,28 +39,27 @@ void _sendFile (int clientSocket) {
 
   fprintf(stdout, "Sending: %s\n", fileName);
 
-  int fileLength = -1;
-  int fileChar = 0;
+  char fileChar = 0;
+  int i = -1;
   bzero(buffer, BUFF_SIZE);
   while ((fileChar = fgetc(fp)) != EOF) {
-    buffer[++fileLength] = fileChar;
+    buffer[++i] = fileChar;
   }
   fclose(fp);
 
   // Temporary header handling.
   char header[BUFF_SIZE] = "HTTP/1.1 200 OK\r\n";
-  char contentType[BUFF_SIZE] = "Content-Type: text/html; charset=UTF-8\r\n";
-  char contentLength[BUFF_SIZE] = { '\0' };
-  sprintf(contentLength, "Content-Length: %d\r\n", fileLength);
+  char contentType[BUFF_SIZE] = "Content-Type: text/html\r\n";
 
-  char response[BUFF_SIZE] = { '\0' };
+  char response[BUFF_SIZE * 5] = { '\0' };
   strcat(response, header);
   strcat(response, contentType);
-  strcat(response, contentLength);
   strcat(response, buffer);
   strcat(response, "\r\n\r\n");
 
-  if (write(clientSocket, &response, strlen(response)) < 0) {
+  fprintf(stdout, "RESP: %s\n", response);
+
+  if (write(clientSocket, response, strlen(response) + 2) < 0) {
     fprintf(stderr, "Error: Sending.");
     return;
   };
