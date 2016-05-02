@@ -17,7 +17,7 @@ struct sockaddr_in _getServerAddress(size_t);
 /**
  *  Bind server address to server socket.
  */
-void _bindHostAddress(int, struct sockaddr_in*);
+void _bindHostAddress(int, struct sockaddr_in);
 
 /**
  *  Listen on server socket for N incoming connections.

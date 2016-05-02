@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/socket.h>
+// #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
@@ -28,7 +28,7 @@ struct sockaddr_in _getServerAddress (size_t _portNumber) {
   return serverAddress;
 }
 
-void _bindHostAddress (int _serverSocket, struct sockaddr_in* _serverAddress) {
+void _bindHostAddress (int _serverSocket, struct sockaddr_in _serverAddress) {
   if (bind(_serverSocket, (struct sockaddr*)&_serverAddress, sizeof(_serverAddress)) < 0) {
     fprintf(stderr, "Error: Binding.\n");
     exit(EXIT_FAILURE);

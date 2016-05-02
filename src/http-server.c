@@ -17,7 +17,7 @@ int main(void) {
   int serverSocket = _getIPV4ServerSocket();
   struct sockaddr_in serverAddress = _getServerAddress(PORT_NO);
 
-  _bindHostAddress(serverSocket, (struct sockaddr*)&serverAddress);
+  _bindHostAddress(serverSocket, serverAddress);
   _startListening(serverSocket, MAX_CONNS);
 
   _startConnectionHandler(serverSocket);
