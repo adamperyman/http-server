@@ -72,4 +72,6 @@ int main(void) {
       close(clientSocket);
     }
   }
+
+  close(serverSocket);
 }
