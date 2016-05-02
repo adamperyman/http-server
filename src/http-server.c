@@ -61,8 +61,6 @@ int main(void) {
       exit(EXIT_FAILURE);
     }
 
-    sleep(1);
-
     // Handle sockets.
     if (pid == 0) {
       close(serverSocket);
@@ -74,4 +72,5 @@ int main(void) {
   }
 
   close(serverSocket);
+  return 0;
 }

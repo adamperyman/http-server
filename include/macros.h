@@ -3,7 +3,7 @@
 
 // Buffer size for requests.
 #ifndef BUFF_SIZE
-#define BUFF_SIZE 1024
+#define BUFF_SIZE 256
 #endif
 
 // Main listening port.
