@@ -5,6 +5,8 @@
  * A simple multi-threaded HTTP server written in C.
  */
 
+#include <arpa/inet.h>
+#include <unistd.h>
 #include "output.h"
 #include "sockets.h"
 #include "macros.h"
@@ -15,7 +17,7 @@ int main(void) {
   int serverSocket = _getIPV4ServerSocket();
   struct sockaddr_in serverAddress = _getServerAddress(PORT_NO);
 
-  _bindHostAddress(serverSocket, serverAddress);
+  _bindHostAddress(serverSocket, (struct sockaddr*)&serverAddress);
   _startListening(serverSocket, MAX_CONNS);
 
   _startConnectionHandler(serverSocket);

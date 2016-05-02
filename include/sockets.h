@@ -1,20 +1,23 @@
+#include <stdio.h>
+#include <sys/socket.h>
+
 #ifndef SOCKETS
 #define SOCKETS
 
 /**
  *  Return a valid welcome socket.
  */
-int _getServerSocket(void);
+int _getIPV4ServerSocket(void);
 
 /**
  *  Return an ipv4 server address.
  */
-sockaddr_in _getServerAddress(size_t);
+struct sockaddr_in _getServerAddress(size_t);
 
 /**
  *  Bind server address to server socket.
  */
-void _bindHostAddress(int, sockaddr*);
+void _bindHostAddress(int, struct sockaddr_in*);
 
 /**
  *  Listen on server socket for N incoming connections.
