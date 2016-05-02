@@ -5,73 +5,23 @@
  * A simple multi-threaded HTTP server written in C.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <string.h>
-#include "functions.h"
+#include "output.h"
+#include "sockets.h"
 #include "macros.h"
 
 int main(void) {
-  _printHeading();
+  _printWelcomeMessage();
 
-  // Setup welcome socket.
-  int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-  if (serverSocket < 0) {
-    fprintf(stderr, "Error: Opening socket.\n");
-    exit(EXIT_FAILURE);
-  }
+  int serverSocket = _getIPV4ServerSocket();
+  struct sockaddr_in serverAddress = _getServerAddress(PORT_NO);
 
-  struct sockaddr_in serverAddress = {};
-  bzero((char*) &serverAddress, sizeof(serverAddress));
+  _bindHostAddress(serverSocket, serverAddress);
+  _startListening(serverSocket, MAX_CONNS);
 
-  serverAddress.sin_family = AF_INET;
-  serverAddress.sin_addr.s_addr = INADDR_ANY;
-  serverAddress.sin_port = htons(PORT_NO);
-
-  // Bind host address.
-  if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-    fprintf(stderr, "Error: Binding.\n");
-    exit(EXIT_FAILURE);
-  }
-
-  // Wait for requests.
-  if (listen(serverSocket, MAX_CONNS) < 0) {
-    fprintf(stderr, "Error: Listening.\n");
-    exit(EXIT_FAILURE);
-  }
-
-  struct sockaddr_in clientAddress = {};
-  socklen_t clientAddressLength = sizeof(clientAddress);
-
-  fprintf(stdout, "Waiting..\n\n");
-
-  while (1) {
-    int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
-    if (clientSocket < 0) {
-      fprintf(stderr, "Error: Accepting connection.\n");
-      exit(EXIT_FAILURE);
-    }
-
-    int pid = fork();
-    if (pid < 0) {
-      fprintf(stderr, "Error: Creating child process.\n");
-      exit(EXIT_FAILURE);
-    }
-
-    sleep(1);
-
-    // Handle sockets.
-    if (pid == 0) {
-      close(serverSocket);
-      _sendFile(clientSocket);
-      exit(EXIT_SUCCESS);
-    } else {
-      close(clientSocket);
-    }
-  }
+  _startConnectionHandler(serverSocket);
 
   close(serverSocket);
+  return 0;
 }

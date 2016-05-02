@@ -6,12 +6,12 @@ LDIR 									= ./lib
 
 LIBS									= -lm
 
-_DEPS 								= functions.h macros.h
+_DEPS 								= file-handling.h macros.h output.h sockets.h
 DEPS 									= $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 MAIN 									= ./src/http-server.o
 
-_OBJ 									= functions.o
+_OBJ 									= file-handling.o output.o sockets.o
 OBJ 									= $(patsubst %,$(LDIR)/%,$(_OBJ))
 
 $(LDIR)/%.o: %.c $(DEPS)

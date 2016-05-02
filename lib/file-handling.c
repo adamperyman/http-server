@@ -1,9 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 #include "macros.h"
 
 void _printHeading (void) {
@@ -47,35 +44,27 @@ void _sendFile (int clientSocket) {
   }
   fclose(fp);
 
-  // Temporary header handling.
+  // Temporary header handling - only text/HTML at the moment.
   char header[BUFF_SIZE] = "HTTP/1.1 200 OK\r\n";
   char contentType[BUFF_SIZE] = "Content-Type: text/html; charset=UTF-8\r\n";
   char contentLength[BUFF_SIZE] = { '\0' };
-  char connection[BUFF_SIZE] = "Connection: Keep-Alive\r\n";
-  char server[BUFF_SIZE] = "Server: AP Server\r\n";
-  char status[BUFF_SIZE] = "Status: 200\r\n";
-  sprintf(contentLength, "Content-Length: %d\r\n", strlen(buffer) + 1);
+  sprintf(contentLength, "Content-Length: %zu\r\n", strlen(buffer) + 1);
 
   char response[BUFF_SIZE] = { '\0' };
   strcat(response, header);
   strcat(response, contentType);
   strcat(response, contentLength);
-  strcat(response, connection);
-  strcat(response, server);
-  strcat(response, status);
-  // strcat(response, buffer);
   strcat(response, "\r\n\r\n");
 
-  printf("\n%s\n", response);
-  printf("\nlen: %d\n", strlen(buffer));
-
+  // There goes the header.
   if (write(clientSocket, response, strlen(response)) < 0) {
-    fprintf(stderr, "Error: Sending header.");
+    fprintf(stderr, "Error: Sending header.\n");
     return;
   };
 
+  // Now the file.
   if (write(clientSocket, buffer, strlen(buffer) + 1) < 0) {
-    fprintf(stderr, "Error: Sending pt. 2.");
+    fprintf(stderr, "Error: Sending file.\n");
     return;
   }
 

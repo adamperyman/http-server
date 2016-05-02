@@ -1,2 +1,4 @@
 *.o
 HTTP-Server
+*.txt
+*.html
