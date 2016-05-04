@@ -3,16 +3,6 @@
 #include <unistd.h>
 #include "macros.h"
 
-void _printHeading (void) {
-  fprintf(stdout, "*************************************\n");
-  fprintf(stdout, "*                                   *\n");
-  fprintf(stdout, "*        A Simple Web Server        *\n");
-  fprintf(stdout, "*                                   *\n");
-  fprintf(stdout, "* Author: Adam Peryman              *\n");
-  fprintf(stdout, "* Contact: adam.peryman@gmail.com   *\n");
-  fprintf(stdout, "*************************************\n");
-}
-
 void _sendFile (int clientSocket) {
   char buffer[BUFF_SIZE] = { '\0' };
   bzero(buffer, BUFF_SIZE);
